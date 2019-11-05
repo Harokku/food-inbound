@@ -47,6 +47,25 @@ func main() {
 	e.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Pong")
 	})
+	// TODO: Return sample DB row to check for Heroku postgres
+	e.GET("/db", func(c echo.Context) error {
+		// TODO: Cancel this aftre functionality check on Heroku
+		// Test select to ckeck for DB connection
+		sqlStatement := `SELECT id, name, address FROM suppliers`
+		var id, name, address string
+		row := db.QueryRow(sqlStatement)
+		switch err := row.Scan(&id, &name, &address); err {
+		case sql.ErrNoRows:
+			fmt.Println("No rows were returned!")
+			return c.String(http.StatusBadRequest, "No rows were found!")
+		case nil:
+			returnString := id + " - " + name + " - " + address
+			return c.String(http.StatusOK, returnString)
+		default:
+			return c.String(http.StatusBadRequest, "No rows were found!")
+		}
+
+	})
 
 	e.Logger.Fatal(e.Start(":" + port))
 }
