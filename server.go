@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"food-inbound/db"
+	"food-inbound/api"
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
 	"log"
@@ -15,6 +15,10 @@ func main() {
 	// Heroku port from env variable
 	port := os.Getenv("PORT")
 
+	// -----------------------
+	// Database connection config
+	// -----------------------
+
 	// Heroku Postgres connection and ping
 	dbConn, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	checkErrorAndPanic(err)
@@ -25,8 +29,15 @@ func main() {
 	checkErrorAndPanic(err)
 	fmt.Println("Correctly pinged DB")
 
+	// -----------------------
 	// Echo server definition
+	// -----------------------
+
 	e := echo.New()
+
+	// -----------------------
+	// Routes definition
+	// -----------------------
 
 	// Static endpoint to serve API doc
 	// TODO: Write API doc
@@ -35,24 +46,16 @@ func main() {
 	e.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Pong")
 	})
+
 	// GET a single supplier based on ID
-	e.GET("/suppliers/:id", func(c echo.Context) error {
-		id := c.Param("id")
-		supplier := db.Supplier{}
-		db := db.Service{Db: dbConn}
-		err := db.GetSupplier(&supplier, id)
-		checkErrorAndPanic(err)
-		return c.JSON(http.StatusOK, supplier)
-	})
+	e.GET("/suppliers/:id", api.GetSupplier(dbConn))
 
 	// GET all records of Suppliers table
-	e.GET("/suppliers", func(c echo.Context) error {
-		var suppliers []db.Supplier
-		db := db.Service{Db: dbConn}
-		err := db.GetSuppliers(&suppliers)
-		checkErrorAndPanic(err)
-		return c.JSON(http.StatusOK, suppliers)
-	})
+	e.GET("/suppliers", api.GetSuppliers(dbConn))
+
+	// -----------------------
+	// Server Start
+	// -----------------------
 
 	e.Logger.Fatal(e.Start(":" + port))
 }
