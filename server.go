@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"food-inbound/db"
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
 	"log"
@@ -15,61 +16,48 @@ func main() {
 	port := os.Getenv("PORT")
 
 	// Heroku Postgres connection and ping
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	dbConn, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	checkErrorAndPanic(err)
 
-	defer db.Close()
+	defer dbConn.Close()
 
-	err = db.Ping()
+	err = dbConn.Ping()
 	checkErrorAndPanic(err)
 	fmt.Println("Correctly pinged DB")
 
-	// TODO: Cancel this aftre functionality check on Heroku
-	// Test select to ckeck for DB connection
-	sqlStatement := `SELECT id, name, address FROM suppliers`
-	var id, name, address string
-	row := db.QueryRow(sqlStatement)
-	switch err := row.Scan(&id, &name, &address); err {
-	case sql.ErrNoRows:
-		fmt.Println("No rows were returned!")
-	case nil:
-		fmt.Println(id, name, address)
-	default:
-		panic(err)
-	}
-
-	//TODO: Line to check if HEROKU db path exist, clean after check
-	fmt.Printf("DBURL: %s", os.Getenv("DATABASE_URL"))
+	// Echo server definition
 	e := echo.New()
 
+	// Static endpoint to serve API doc
+	// TODO: Write API doc
 	e.Static("/docs", "static/docs")
 
 	e.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Pong")
 	})
-	// TODO: Return sample DB row to check for Heroku postgres
-	e.GET("/db", func(c echo.Context) error {
-		// TODO: Cancel this aftre functionality check on Heroku
-		// Test select to ckeck for DB connection
-		sqlStatement := `SELECT id, name, address FROM suppliers`
-		var id, name, address string
-		row := db.QueryRow(sqlStatement)
-		switch err := row.Scan(&id, &name, &address); err {
-		case sql.ErrNoRows:
-			fmt.Println("No rows were returned!")
-			return c.String(http.StatusBadRequest, "No rows were found!")
-		case nil:
-			returnString := id + " - " + name + " - " + address
-			return c.String(http.StatusOK, returnString)
-		default:
-			return c.String(http.StatusBadRequest, "No rows were found!")
-		}
+	// GET a single supplier based on ID
+	e.GET("/suppliers/:id", func(c echo.Context) error {
+		id := c.Param("id")
+		supplier := db.Supplier{}
+		db := db.Service{Db: dbConn}
+		err := db.GetSupplier(&supplier, id)
+		checkErrorAndPanic(err)
+		return c.JSON(http.StatusOK, supplier)
+	})
 
+	// GET all records of Suppliers table
+	e.GET("/suppliers", func(c echo.Context) error {
+		var suppliers []db.Supplier
+		db := db.Service{Db: dbConn}
+		err := db.GetSuppliers(&suppliers)
+		checkErrorAndPanic(err)
+		return c.JSON(http.StatusOK, suppliers)
 	})
 
 	e.Logger.Fatal(e.Start(":" + port))
 }
 
+// Default error check with fatal if err != nil
 func checkErrorAndPanic(err error) {
 	if err != nil {
 		log.Fatal(err)
