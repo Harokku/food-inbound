@@ -35,6 +35,8 @@ func main() {
 
 	e := echo.New()
 
+	// TODO: Implement logger with config
+
 	// -----------------------
 	// Routes definition
 	// -----------------------
@@ -52,6 +54,10 @@ func main() {
 
 	// GET all records of Suppliers table
 	e.GET("/suppliers", api.GetSuppliers(dbConn))
+
+	// TODO: Implement handler
+	// POST a new record to suppliers table
+	e.POST("/suppliers", api.PostSupplier(dbConn))
 
 	// -----------------------
 	// Server Start
