@@ -45,7 +45,7 @@ func (s Service) GetSuppliers(suppliers *[]Supplier) error {
 		err = rows.Scan(&supplier.Id, &supplier.Name, &supplier.Address, &supplier.ReferenceName, &supplier.ReferenceMail, &supplier.ReferencePhone)
 		// TODO: Implement better error handling
 		if err != nil {
-			panic(err)
+			return err
 		}
 		*suppliers = append(*suppliers, supplier)
 	}
@@ -72,4 +72,33 @@ func (s Service) PostSupplier(supplier Supplier) (string, error) {
 		return "", err
 	}
 	return res, nil
+}
+
+// Update selected record
+// Pass the updated Supplier with Id set
+// Beware to fill every field needed, omitted wil be nulled
+func (s Service) PutSuppliers(supplier Supplier) error {
+	sqlStatement := `
+		UPDATE suppliers
+		SET name=$2, address=$3, reference_name=$4, reference_mail=$5, reference_phone=$6
+		WHERE id=$1
+`
+	_, err := s.Db.Exec(sqlStatement, supplier.Id, supplier.Name, supplier.Address, supplier.ReferenceName, supplier.ReferenceMail, supplier.ReferencePhone)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Delete selected record
+func (s Service) DeleteSupplier(id string) error {
+	sqlStatement := `
+		DELETE FROM suppliers
+		WHERE id=$1
+`
+	_, err := s.Db.Exec(sqlStatement, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

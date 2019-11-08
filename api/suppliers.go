@@ -46,6 +46,34 @@ func PostSupplier(dbConn *sql.DB) echo.HandlerFunc {
 	}
 }
 
+func PutSupplier(dbConn *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		s := new(dbRef.Supplier)
+		if err := c.Bind(s); err != nil {
+			return c.String(http.StatusBadRequest, "Error binding PUT body")
+		}
+		s.Id = c.Param("id")
+
+		db := dbRef.Service{Db: dbConn}
+		err := db.PutSuppliers(*s)
+		checkErrorAndPanic(err)
+
+		return c.String(http.StatusNoContent, "Record successfully updated")
+	}
+}
+
+func DeleteSuppliers(dbConn *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id")
+
+		db := dbRef.Service{Db: dbConn}
+		err := db.DeleteSupplier(id)
+		checkErrorAndPanic(err)
+
+		return c.String(http.StatusNoContent, "Record successfully deleted")
+	}
+}
+
 // Default error check with fatal if err != nil
 func checkErrorAndPanic(err error) {
 	if err != nil {
