@@ -18,9 +18,30 @@ func main() {
 	srv := gApi.GService{}
 	err := srv.Service()
 	checkErrorAndPanic(err)
-	resp, err := srv.ReadRange("Fornitori!A1")
+	resp, err := srv.ReadRange("Fornitori!A2:B3")
 	checkErrorAndPanic(err)
 	fmt.Printf("Returned data is: %v\n", resp)
+
+	type result struct {
+		nome      string
+		indirizzo string
+	}
+	var fornitori []result
+	for _, row := range resp {
+		fmt.Printf("Row: %v\n", row)
+		f := result{
+			nome:      fmt.Sprintf("%v", row[0]),
+			indirizzo: fmt.Sprintf("%v", row[1]),
+		}
+		fornitori = append(fornitori, f)
+	}
+	fmt.Printf("Fornitori: %v\n", fornitori)
+	for _, row := range fornitori {
+		fmt.Printf("Struct row: %s - %s\n", row.nome, row.indirizzo)
+	}
+	// Append Test
+	res, err := srv.Append("Fornitori!A2:B4", [][]interface{}{{"Lindt", "Siur Sprungli"}})
+	fmt.Printf("Append response: %v\n", res)
 
 	// FIXME: Return used for dev purpose, remove when done
 	return
