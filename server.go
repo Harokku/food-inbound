@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"food-inbound/api"
+	"food-inbound/gApi"
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
 	"log"
@@ -12,6 +13,18 @@ import (
 )
 
 func main() {
+	// TODO: Implement real service
+	// GApi service test
+	srv := gApi.GService{}
+	err := srv.Service()
+	checkErrorAndPanic(err)
+	resp, err := srv.ReadRange("Fornitori!A1")
+	checkErrorAndPanic(err)
+	fmt.Printf("Returned data is: %v\n", resp)
+
+	// FIXME: Return used for dev purpose, remove when done
+	return
+
 	// Heroku port from env variable
 	port := os.Getenv("PORT")
 
