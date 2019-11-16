@@ -2,7 +2,6 @@ package gApi
 
 import (
 	"context"
-	"fmt"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
@@ -58,7 +57,6 @@ func (s GService) Append(r string, data [][]interface{}) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	fmt.Printf("GApi responded with: %d\n", res.HTTPStatusCode)
 	return res.HTTPStatusCode, nil
 }
 

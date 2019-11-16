@@ -2,9 +2,171 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>API docs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
 <body>
-<h1>This will be the api docs page</h1>
+<section class="hero">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">Food-Inbound API docs</h1>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Endpoint</th>
+                <th>Method</th>
+                <th>Variables</th>
+                <th>Description</th>
+                <th>Success Code</th>
+                <th>Error Code</th>
+                <th>Example</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <th>/docs</th>
+                <td>GET</td>
+                <td></td>
+                <td>This documentation</td>
+                <td>200</td>
+                <td>501</td>
+                <td>GET /docs -> Show this page</td>
+            </tr>
+            <tr>
+                <th>/ping</th>
+                <td>GET</td>
+                <td></td>
+                <td>Ping the API to check for upstate</td>
+                <td>200</td>
+                <td>501</td>
+                <td>GET /ping -> Pong</td>
+            </tr>
+            <tr>
+                <th>/suppliers</th>
+                <td>GET</td>
+                <td></td>
+                <td>Return all suppliers</td>
+                <td>200</td>
+                <td>501</td>
+                <td>
+                    GET /suppliers ->
+                    <pre>
+                    <code>
+{
+    "id": "her4-ggd3-ff",
+    "name": "Supplier name"
+}
+                    </code>
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <th>/suppliers/:id</th>
+                <td>GET</td>
+                <td><b>:id</b> = UUID of requested resource</td>
+                <td>Return only the requested supplier</td>
+                <td>200</td>
+                <td>501</td>
+                <td>GET /suppliers/her4-ggd3-f ->
+                    <pre>
+                        <code>
+{
+    "id": "her4-ggd3-ff",
+    "name": "Supplier name"
+}
+                        </code>
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <th>/suppliers</th>
+                <td>POST</td>
+                <td>JSON body<br/>
+                    <b>name:</b> Supplier name<br/>
+                    <b>address:</b> Supplier address<br/>
+                    <b>reference_name:</b> Reference person name<br/>
+                    <b>reference_mail:</b> Reference person mail<br/>
+                    <b>reference_phone:</b> Reference person phone
+                </td>
+                <td>Create a new supplier</td>
+                <td>201</td>
+                <td>400</td>
+                <td>
+                    <pre>
+                        <code>
+POST /suppliers
+{
+    "name": "Frigos",
+    "address": "Via del Nasello, 15",
+    "reference_name": "Giuanpugnani Maurice",
+    "reference_mail": "giampumauri@frigos.eu",
+    "reference_phone": "3991999919"
+}
+                        </code>
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <th>/suppliers</th>
+                <td>POST</td>
+                <td>JSON body<br/>
+                    <b>id:</b> Supplier UUID<br/>
+                    <b>name:</b> Supplier name<br/>
+                    <b>address:</b> Supplier address<br/>
+                    <b>reference_name:</b> Reference person name<br/>
+                    <b>reference_mail:</b> Reference person mail<br/>
+                    <b>reference_phone:</b> Reference person phone
+                </td>
+                <td>Update an existent supplier</td>
+                <td>400</td>
+                <td>204</td>
+                <td>
+                    <pre>
+                        <code>
+PUT /suppliers
+{
+    "id": "her4-ggd3-ff",
+    "name": "Frigos",
+    "address": "Via del Nasello, 15",
+    "reference_name": "Giuanpugnani Maurice",
+    "reference_mail": "giampumauri@frigos.eu",
+    "reference_phone": "3991999919"
+}
+                        </code>
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <th>/suppliers</th>
+                <td>DELETE</td>
+                <td>JSON body<br/>
+                    <b>id:</b> Supplier UUID<br/>
+                </td>
+                <td>Delete selected supplier</td>
+                <td>204</td>
+                <td>404</td>
+                <td>
+                    <pre>
+                        <code>
+DELETE /suppliers
+{
+    "id": "her4-ggd3-ff"
+}
+                        </code>
+                    </pre>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
 </body>
 </html>
